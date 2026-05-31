@@ -454,8 +454,6 @@
       </div>
 
       <div class="score-flash" id="scoreFlash">+0</div>
-      <div class="toast" id="messageEl"><strong>START</strong> Tap START to play.</div>
-
       </section>
 
       <div class="preview-panel hold-view" aria-label="Hold piece">
@@ -602,7 +600,9 @@
     let audioCtx = null;
     const bgm = new Audio(BGM_PATH);
     bgm.loop = true;
-    bgm.volume = 0.36;
+    bgm.volume = 0.18;
+    const SFX_GAIN = 2.15;
+    const SFX_MAX_VOLUME = 0.22;
     bgm.preload = "auto";
 
     let board = createEmptyBoard();
@@ -750,7 +750,6 @@
       overlayRankingBtn.classList.remove("show");
       overlayRankingBtn.textContent = "RANKING";
       rankBox.classList.remove("show");
-      showMessage("<strong>READY</strong> Clear lines and aim high.");
       spawnPiece();
       playBgm();
       drawAll();
@@ -783,7 +782,7 @@
       }
 
       if (toastTimer > 0 && performance.now() > toastTimer) {
-        messageEl.style.opacity = "0.42";
+        if (messageEl) messageEl.style.opacity = "0.42";
         toastTimer = 0;
       }
 
@@ -1048,6 +1047,7 @@
     }
 
     function showMessage(html) {
+      if (!messageEl) return;
       messageEl.innerHTML = html;
       messageEl.style.opacity = "0.94";
       toastTimer = performance.now() + 1600;
@@ -1095,10 +1095,11 @@
       const now = audioCtx.currentTime + startTime;
       const oscillator = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
+      const adjustedVolume = Math.min(volume * SFX_GAIN, SFX_MAX_VOLUME);
       oscillator.type = type;
       oscillator.frequency.setValueAtTime(frequency, now);
       gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(volume, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(adjustedVolume, now + 0.01);
       gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
       oscillator.connect(gain);
       gain.connect(audioCtx.destination);
@@ -1115,9 +1116,10 @@
     }
 
     function playHardDropSound() {
-      playTone({ frequency: 126, duration: 0.1, type: "sawtooth", volume: 0.085 });
-      playTone({ frequency: 72, duration: 0.12, type: "square", volume: 0.055, startTime: 0.035 });
-      playTone({ frequency: 48, duration: 0.09, type: "sawtooth", volume: 0.04, startTime: 0.07 });
+      playTone({ frequency: 126, duration: 0.14, type: "sawtooth", volume: 0.105 });
+      playTone({ frequency: 72, duration: 0.16, type: "square", volume: 0.075, startTime: 0.035 });
+      playTone({ frequency: 48, duration: 0.12, type: "sawtooth", volume: 0.055, startTime: 0.075 });
+      playTone({ frequency: 260, duration: 0.045, type: "square", volume: 0.045, startTime: 0.015 });
     }
 
     function playLockSound() {
@@ -1127,9 +1129,10 @@
     function playClearSound(big) {
       const notes = big ? [523.25, 659.25, 783.99, 1046.5] : [440, 554.37, 659.25];
       notes.forEach((frequency, index) => {
-        playTone({ frequency, duration: 0.13, type: "triangle", volume: 0.075, startTime: index * 0.052 });
+        playTone({ frequency, duration: 0.16, type: "triangle", volume: big ? 0.105 : 0.095, startTime: index * 0.055 });
       });
-      playTone({ frequency: 146.83, duration: 0.16, type: "sawtooth", volume: 0.035, startTime: 0.03 });
+      playTone({ frequency: 146.83, duration: 0.2, type: "sawtooth", volume: 0.06, startTime: 0.03 });
+      playTone({ frequency: 1760, duration: 0.08, type: "square", volume: 0.035, startTime: 0.02 });
     }
 
     function playTSpinSound() {
