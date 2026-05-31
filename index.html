@@ -1,47 +1,43 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Block Drop</title>
   <style>
     :root {
       --bg: #07111f;
-      --panel: rgba(13, 26, 45, 0.88);
-      --panel-strong: rgba(18, 36, 62, 0.95);
-      --line: rgba(154, 204, 255, 0.22);
-      --text: #f3f8ff;
-      --muted: #a9bdd3;
-      --accent: #64d9ff;
-      --danger: #ff6b88;
-      --good: #78ffb7;
+      --panel: rgba(8, 18, 34, 0.58);
+      --panel-strong: rgba(8, 18, 34, 0.88);
+      --line: rgba(164, 218, 255, 0.25);
+      --text: #f4f8ff;
+      --muted: #b8c7da;
+      --accent: #63dcff;
       --warn: #ffe17a;
-      --shadow: rgba(0, 0, 0, 0.4);
+      --danger: #ff6d8e;
+      --shadow: rgba(0, 0, 0, 0.44);
     }
 
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
 
     html,
     body {
       margin: 0;
-      min-height: 100%;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
       background:
-        radial-gradient(circle at 20% 10%, rgba(67, 212, 255, 0.2), transparent 28%),
-        radial-gradient(circle at 80% 20%, rgba(183, 105, 255, 0.16), transparent 26%),
-        linear-gradient(160deg, #030710, var(--bg) 45%, #0b1830);
+        radial-gradient(circle at 20% 8%, rgba(67, 212, 255, 0.22), transparent 28%),
+        radial-gradient(circle at 84% 18%, rgba(183, 105, 255, 0.18), transparent 28%),
+        linear-gradient(160deg, #030710, var(--bg) 48%, #0b1830);
       color: var(--text);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       overscroll-behavior: none;
-      touch-action: manipulation;
-    }
-
-    body {
-      display: flex;
-      justify-content: center;
-      padding: 14px;
+      touch-action: none;
     }
 
     button,
@@ -50,93 +46,24 @@
     }
 
     .app {
-      width: min(1120px, 100%);
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(250px, 330px);
-      gap: 14px;
-      align-items: start;
-    }
-
-    .game-card,
-    .side-card,
-    .controls,
-    .mobile-hint {
-      border: 1px solid var(--line);
-      background: var(--panel);
-      box-shadow: 0 18px 60px var(--shadow);
-      backdrop-filter: blur(12px);
-      border-radius: 22px;
-    }
-
-    .game-card {
-      position: relative;
-      padding: 14px;
-      overflow: hidden;
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-
-    h1 {
-      margin: 0;
-      line-height: 1;
-      letter-spacing: 0.08em;
-      font-size: clamp(1.55rem, 4vw, 2.25rem);
-      text-shadow: 0 0 20px rgba(100, 217, 255, 0.42);
-    }
-
-    .sub-title {
-      margin-top: 6px;
-      color: var(--muted);
-      font-size: 0.82rem;
-      letter-spacing: 0.03em;
-    }
-
-    .top-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: flex-end;
-    }
-
-    .mini-btn,
-    .rank-btn {
-      border: 1px solid rgba(154, 204, 255, 0.3);
-      color: var(--text);
-      background: linear-gradient(180deg, rgba(45, 75, 112, 0.96), rgba(18, 35, 58, 0.96));
-      border-radius: 999px;
-      padding: 9px 12px;
-      cursor: pointer;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 8px 20px rgba(0, 0, 0, 0.18);
-    }
-
-    .mini-btn:active,
-    .rank-btn:active,
-    .control-btn:active {
-      transform: translateY(1px) scale(0.99);
-    }
-
-    .stage-wrap {
-      display: grid;
-      grid-template-columns: minmax(210px, 360px) minmax(150px, 1fr);
-      gap: 12px;
-      align-items: start;
-      justify-content: center;
+      place-items: center;
+      padding: max(4px, env(safe-area-inset-top)) max(4px, env(safe-area-inset-right)) max(4px, env(safe-area-inset-bottom)) max(4px, env(safe-area-inset-left));
     }
 
     .board-shell {
       position: relative;
-      width: min(100%, 360px);
-      margin-inline: auto;
-      padding: 8px;
+      width: min(96vw, 48vh, 420px);
+      width: min(96vw, 48dvh, 420px);
+      aspect-ratio: 10 / 20;
       border-radius: 18px;
-      background: linear-gradient(180deg, rgba(122, 207, 255, 0.18), rgba(104, 102, 255, 0.08));
-      border: 1px solid rgba(154, 204, 255, 0.24);
+      overflow: hidden;
+      border: 1px solid rgba(164, 218, 255, 0.26);
+      background: rgba(2, 7, 15, 0.82);
+      box-shadow: 0 22px 70px var(--shadow), inset 0 0 30px rgba(99, 220, 255, 0.12);
     }
 
     canvas {
@@ -145,137 +72,309 @@
 
     #boardCanvas {
       width: 100%;
-      aspect-ratio: 10 / 20;
-      border-radius: 12px;
+      height: 100%;
       background: #050913;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: inset 0 0 34px rgba(30, 130, 220, 0.14);
     }
 
-    .status-grid {
+    .hud {
+      position: absolute;
+      top: 1.2%;
+      left: 24%;
+      right: 20%;
+      z-index: 3;
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-      margin-bottom: 10px;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      pointer-events: none;
     }
 
-    .stat,
-    .preview-card,
-    .ranking-card,
-    .settings-card {
-      border: 1px solid rgba(154, 204, 255, 0.18);
-      background: rgba(4, 12, 24, 0.48);
-      border-radius: 16px;
-      padding: 10px;
+    .stat {
+      min-width: 0;
+      border: 1px solid rgba(164, 218, 255, 0.18);
+      background: var(--panel);
+      border-radius: 10px;
+      padding: 4px 5px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+      backdrop-filter: blur(8px);
     }
 
-    .stat-label,
-    .preview-label,
-    .ranking-title {
+    .stat-label {
       color: var(--muted);
-      font-size: 0.72rem;
-      letter-spacing: 0.11em;
+      font-size: clamp(0.46rem, 1.9vw, 0.63rem);
+      letter-spacing: 0.08em;
       text-transform: uppercase;
     }
 
     .stat-value {
-      margin-top: 3px;
-      font-size: clamp(1.1rem, 3vw, 1.55rem);
-      font-weight: 800;
+      margin-top: 1px;
+      font-size: clamp(0.7rem, 2.7vw, 1rem);
+      font-weight: 900;
+      line-height: 1.05;
       font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .preview-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 10px;
+    .preview-panel {
+      position: absolute;
+      z-index: 3;
+      border: 1px solid rgba(164, 218, 255, 0.2);
+      background: rgba(5, 12, 22, 0.5);
+      border-radius: 13px;
+      padding: 5px;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.24);
+      backdrop-filter: blur(8px);
+      pointer-events: none;
     }
 
-    .preview-card canvas {
-      width: 100%;
-      max-width: 124px;
-      aspect-ratio: 1 / 1;
-      margin: 6px auto 0;
-      background: rgba(0, 0, 0, 0.18);
-      border-radius: 10px;
-    }
-
-    .message-box {
-      min-height: 42px;
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 16px;
-      background: rgba(0, 0, 0, 0.24);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    .preview-label {
       color: var(--muted);
-      line-height: 1.4;
-      font-size: 0.9rem;
+      text-align: center;
+      font-size: clamp(0.48rem, 1.9vw, 0.66rem);
+      letter-spacing: 0.1em;
+      line-height: 1;
+      margin-bottom: 4px;
+      text-transform: uppercase;
     }
 
-    .message-box strong {
-      color: var(--accent);
+    .hold-view {
+      top: 1.2%;
+      left: 1.5%;
+      width: 20%;
     }
 
-    .controls {
-      margin-top: 12px;
-      padding: 12px;
+    .next-view {
+      top: 1.2%;
+      right: 1.5%;
+      width: 16.5%;
     }
 
-    .control-grid {
+    .preview-panel canvas {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      margin: 3px auto;
+      border-radius: 9px;
+      background: rgba(0, 0, 0, 0.22);
+    }
+
+    .touch-controls {
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .play-btn {
+      position: absolute;
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-    }
-
-    .control-btn {
-      min-height: 50px;
-      border: 1px solid rgba(154, 204, 255, 0.32);
-      border-radius: 16px;
+      place-items: center;
+      border: 1px solid rgba(210, 238, 255, 0.36);
+      border-radius: 18px;
       color: var(--text);
-      background: linear-gradient(180deg, rgba(43, 79, 120, 0.98), rgba(18, 35, 58, 0.98));
-      font-weight: 800;
+      background: linear-gradient(180deg, rgba(54, 92, 132, 0.6), rgba(13, 29, 52, 0.58));
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        0 10px 22px rgba(0, 0, 0, 0.22);
+      backdrop-filter: blur(8px);
       cursor: pointer;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 10px 18px rgba(0, 0, 0, 0.2);
-      user-select: none;
+      pointer-events: auto;
+      font-weight: 900;
+      font-size: clamp(0.78rem, 3.4vw, 1.2rem);
+      line-height: 1;
       touch-action: none;
     }
 
-    .control-btn.wide {
-      grid-column: span 2;
+    .play-btn:active {
+      transform: scale(0.98) translateY(1px);
+      background: linear-gradient(180deg, rgba(84, 136, 188, 0.7), rgba(20, 48, 84, 0.66));
     }
 
-    .control-btn.accent {
-      background: linear-gradient(180deg, rgba(0, 166, 212, 0.96), rgba(16, 79, 126, 0.96));
+    .btn-left {
+      left: 3.4%;
+      bottom: 6.3%;
+      width: 26%;
+      height: 13%;
+      font-size: clamp(1.5rem, 8vw, 2.5rem);
     }
 
-    .control-btn.warn {
-      background: linear-gradient(180deg, rgba(194, 142, 31, 0.96), rgba(117, 74, 16, 0.96));
+    .btn-right {
+      right: 3.4%;
+      bottom: 6.3%;
+      width: 26%;
+      height: 13%;
+      font-size: clamp(1.5rem, 8vw, 2.5rem);
     }
 
-    .keyboard-help {
-      margin-top: 10px;
+    .btn-ccw {
+      left: 32.2%;
+      bottom: 18.8%;
+      width: 15.5%;
+      height: 8.6%;
+    }
+
+    .btn-cw {
+      left: 52.3%;
+      bottom: 18.8%;
+      width: 15.5%;
+      height: 8.6%;
+    }
+
+    .btn-hold {
+      left: 32.2%;
+      bottom: 6.3%;
+      width: 15.5%;
+      height: 8.6%;
+      color: var(--warn);
+    }
+
+    .btn-soft {
+      right: 32.2%;
+      bottom: 18.8%;
+      width: 15.5%;
+      height: 8.6%;
+      font-size: clamp(1.15rem, 5.8vw, 1.9rem);
+    }
+
+    .btn-drop {
+      right: 32.2%;
+      bottom: 6.3%;
+      width: 15.5%;
+      height: 8.6%;
+      color: var(--accent);
+      font-size: clamp(0.66rem, 2.6vw, 0.95rem);
+    }
+
+    .score-flash {
+      position: absolute;
+      left: 50%;
+      top: 42%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      opacity: 0;
+      z-index: 5;
+      color: var(--warn);
+      font-size: clamp(1.35rem, 7vw, 2.4rem);
+      font-weight: 1000;
+      text-shadow: 0 0 18px rgba(255, 225, 122, 0.78), 0 0 34px rgba(255, 225, 122, 0.38);
+      transition: opacity 0.16s, transform 0.16s;
+    }
+
+    .score-flash.show {
+      opacity: 1;
+      transform: translate(-50%, -78%);
+    }
+
+    .toast {
+      position: absolute;
+      left: 50%;
+      bottom: 24%;
+      transform: translateX(-50%);
+      z-index: 5;
+      min-width: 44%;
+      max-width: 82%;
+      border: 1px solid rgba(164, 218, 255, 0.24);
+      background: rgba(5, 12, 22, 0.55);
       color: var(--muted);
-      font-size: 0.78rem;
-      line-height: 1.55;
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: clamp(0.62rem, 2.5vw, 0.82rem);
+      text-align: center;
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+      opacity: 0.9;
     }
 
-    .side-card {
+    .toast strong {
+      color: var(--accent);
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      display: none;
+      place-items: center;
       padding: 14px;
+      background: rgba(2, 7, 15, 0.66);
+      backdrop-filter: blur(6px);
     }
 
-    .ranking-card,
-    .settings-card {
-      background: rgba(5, 14, 29, 0.62);
-      margin-bottom: 12px;
+    .overlay.show {
+      display: grid;
     }
 
-    .ranking-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
+    .overlay-panel {
+      width: min(92%, 360px);
+      max-height: 92%;
+      overflow: auto;
+      border: 1px solid rgba(164, 218, 255, 0.28);
+      background: var(--panel-strong);
+      border-radius: 22px;
+      padding: 18px;
+      text-align: center;
+      box-shadow: 0 22px 68px rgba(0, 0, 0, 0.52);
+    }
+
+    .overlay-title {
+      margin: 0 0 8px;
+      font-size: clamp(1.55rem, 7vw, 2.15rem);
+      letter-spacing: 0.08em;
+    }
+
+    .overlay-text {
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: clamp(0.82rem, 3vw, 0.98rem);
+    }
+
+    .mini-btn,
+    .rank-btn {
+      border: 1px solid rgba(164, 218, 255, 0.32);
+      color: var(--text);
+      background: linear-gradient(180deg, rgba(45, 75, 112, 0.96), rgba(18, 35, 58, 0.96));
+      border-radius: 999px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 850;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 8px 20px rgba(0, 0, 0, 0.18);
+    }
+
+    .rank-box {
+      display: none;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(164, 218, 255, 0.2);
+      text-align: left;
+    }
+
+    .rank-box.show {
+      display: block;
+    }
+
+    .rank-title {
+      font-weight: 850;
+      text-align: center;
       margin-bottom: 8px;
+    }
+
+    .name-row {
+      display: flex;
+      gap: 7px;
+      margin: 8px 0;
+    }
+
+    .name-row input {
+      min-width: 0;
+      flex: 1;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(164, 218, 255, 0.25);
+      border-radius: 12px;
+      padding: 10px;
+      outline: none;
+      user-select: text;
     }
 
     .ranking-status {
@@ -285,386 +384,105 @@
       margin: 8px 0;
     }
 
-    .name-row {
-      display: flex;
-      gap: 8px;
-      margin: 10px 0;
-    }
-
-    .name-row input {
-      min-width: 0;
-      flex: 1;
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.07);
-      border: 1px solid rgba(154, 204, 255, 0.25);
-      border-radius: 12px;
-      padding: 10px;
-      outline: none;
-    }
-
-    .name-row input:focus {
-      border-color: rgba(100, 217, 255, 0.85);
-      box-shadow: 0 0 0 3px rgba(100, 217, 255, 0.15);
-    }
-
     .ranking-list {
-      margin: 0;
+      margin: 8px 0 0;
       padding-left: 1.4em;
-      line-height: 1.7;
       color: var(--text);
-      font-variant-numeric: tabular-nums;
-      max-height: 250px;
+      line-height: 1.55;
+      font-size: 0.82rem;
+      max-height: 130px;
       overflow: auto;
-    }
-
-    .ranking-list li {
-      margin: 4px 0;
-      padding-left: 2px;
+      font-variant-numeric: tabular-nums;
     }
 
     .ranking-list small {
       color: var(--muted);
     }
 
-    details {
-      color: var(--muted);
-      font-size: 0.82rem;
-      line-height: 1.55;
-    }
-
-    summary {
-      cursor: pointer;
-      color: var(--text);
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    pre {
-      white-space: pre-wrap;
-      word-break: break-word;
-      background: rgba(0, 0, 0, 0.28);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      padding: 10px;
-      color: #d7ecff;
-      font-size: 0.76rem;
-      overflow: auto;
-    }
-
-    .overlay {
-      position: absolute;
-      inset: 0;
-      display: none;
-      place-items: center;
-      padding: 18px;
-      background: rgba(1, 5, 12, 0.72);
-      backdrop-filter: blur(6px);
-      z-index: 10;
-    }
-
-    .overlay.show {
-      display: grid;
-    }
-
-    .overlay-panel {
-      width: min(420px, 100%);
-      text-align: center;
-      border: 1px solid rgba(154, 204, 255, 0.26);
-      background: var(--panel-strong);
-      border-radius: 24px;
-      padding: 22px;
-      box-shadow: 0 26px 90px rgba(0, 0, 0, 0.5);
-    }
-
-    .overlay-title {
-      margin: 0 0 8px;
-      font-size: 1.9rem;
-      letter-spacing: 0.06em;
-    }
-
-    .overlay-text {
-      color: var(--muted);
-      line-height: 1.6;
-      margin: 0 0 16px;
-    }
-
-    .overlay-actions {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .score-flash {
-      position: absolute;
-      left: 50%;
-      top: 44%;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-      opacity: 0;
-      color: var(--warn);
-      font-size: clamp(1.4rem, 5vw, 2.4rem);
-      font-weight: 900;
-      text-shadow: 0 0 18px rgba(255, 225, 122, 0.65);
-      transition: opacity 0.2s, transform 0.2s;
-      z-index: 5;
-    }
-
-    .score-flash.show {
-      opacity: 1;
-      transform: translate(-50%, -70%);
-    }
-
-    @media (max-width: 820px) {
-      body {
-        padding: 10px;
+    @media (max-height: 620px) {
+      .toast {
+        display: none;
       }
 
-      .app {
-        grid-template-columns: 1fr;
-      }
-
-      .stage-wrap {
-        grid-template-columns: minmax(190px, 1fr) minmax(128px, 0.62fr);
-      }
-
-      .topbar {
-        align-items: flex-start;
-      }
-
-      .top-actions {
-        max-width: 190px;
-      }
-    }
-
-    @media (max-width: 560px) {
-      .game-card,
-      .side-card,
-      .controls {
-        border-radius: 18px;
-      }
-
-      .topbar {
-        flex-direction: column;
-      }
-
-      .top-actions {
-        max-width: none;
-        width: 100%;
-        justify-content: flex-start;
-      }
-
-      .stage-wrap {
-        grid-template-columns: 1fr;
-      }
-
-      .side-panel-in-game {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-      }
-
-      .status-grid {
-        grid-column: 1 / -1;
-        grid-template-columns: repeat(4, 1fr);
+      .hud {
+        gap: 3px;
       }
 
       .stat {
-        padding: 8px;
+        padding: 3px 4px;
       }
 
-      .stat-value {
-        font-size: 1rem;
-      }
-
-      .preview-row {
-        grid-column: 1 / -1;
-      }
-
-      .message-box {
-        grid-column: 1 / -1;
-      }
-
-      .control-grid {
-        grid-template-columns: repeat(4, 1fr);
-      }
-
-      .control-btn {
-        min-height: 48px;
+      .play-btn {
         border-radius: 14px;
-      }
-
-      .control-btn.wide {
-        grid-column: span 2;
       }
     }
   </style>
 </head>
 <body>
-  <main class="app">
-    <section class="game-card" aria-label="Block Drop game">
-      <div class="topbar">
-        <div>
-          <h1>Block Drop</h1>
-          <div class="sub-title">Falling block puzzle / 10x20 / Ghost / Hold / T-Spin</div>
-        </div>
-        <div class="top-actions">
-          <button class="mini-btn" id="newGameBtn" type="button">NEW GAME</button>
-          <button class="mini-btn" id="pauseBtn" type="button">PAUSE</button>
-          <button class="mini-btn" id="muteBtn" type="button">SOUND ON</button>
-        </div>
+  <main class="app" aria-label="Block Drop game">
+    <section class="board-shell">
+      <canvas id="boardCanvas" width="320" height="640" aria-label="Board"></canvas>
+
+      <div class="hud" aria-label="Status">
+        <div class="stat"><div class="stat-label">Score</div><div class="stat-value" id="scoreEl">0</div></div>
+        <div class="stat"><div class="stat-label">Best</div><div class="stat-value" id="bestEl">0</div></div>
+        <div class="stat"><div class="stat-label">Level</div><div class="stat-value" id="levelEl">1</div></div>
+        <div class="stat"><div class="stat-label">Lines</div><div class="stat-value" id="linesEl">0</div></div>
       </div>
 
-      <div class="stage-wrap">
-        <div class="board-shell">
-          <canvas id="boardCanvas" width="320" height="640" aria-label="Board"></canvas>
-          <div class="score-flash" id="scoreFlash">+0</div>
-        </div>
-
-        <div class="side-panel-in-game">
-          <div class="status-grid">
-            <div class="stat">
-              <div class="stat-label">Score</div>
-              <div class="stat-value" id="scoreEl">0</div>
-            </div>
-            <div class="stat">
-              <div class="stat-label">Best</div>
-              <div class="stat-value" id="bestEl">0</div>
-            </div>
-            <div class="stat">
-              <div class="stat-label">Level</div>
-              <div class="stat-value" id="levelEl">1</div>
-            </div>
-            <div class="stat">
-              <div class="stat-label">Lines</div>
-              <div class="stat-value" id="linesEl">0</div>
-            </div>
-          </div>
-
-          <div class="preview-row">
-            <div class="preview-card">
-              <div class="preview-label">Next</div>
-              <canvas id="nextCanvas" width="128" height="128" aria-label="Next piece"></canvas>
-            </div>
-            <div class="preview-card">
-              <div class="preview-label">Hold</div>
-              <canvas id="holdCanvas" width="128" height="128" aria-label="Held piece"></canvas>
-            </div>
-          </div>
-
-          <div class="message-box" id="messageEl">
-            <strong>START</strong> Press START to begin. HOLD can be used once per piece.
-          </div>
-        </div>
+      <div class="preview-panel hold-view" aria-label="Hold piece">
+        <div class="preview-label">Hold</div>
+        <canvas id="holdCanvas" width="96" height="96"></canvas>
       </div>
 
-      <div class="controls" aria-label="Mobile controls">
-        <div class="control-grid">
-          <button class="control-btn" data-action="left" type="button">LEFT</button>
-          <button class="control-btn" data-action="rotateCCW" type="button">CCW</button>
-          <button class="control-btn" data-action="rotateCW" type="button">CW</button>
-          <button class="control-btn" data-action="right" type="button">RIGHT</button>
-          <button class="control-btn warn" data-action="hold" type="button">HOLD</button>
-          <button class="control-btn wide" data-action="softDrop" type="button">DOWN</button>
-          <button class="control-btn wide accent" data-action="hardDrop" type="button">DROP</button>
-          <button class="control-btn" data-action="pause" type="button">PAUSE</button>
-        </div>
-        <div class="keyboard-help">
-          PC controls: Arrow Left/Right = Move / Arrow Down = Soft Drop / Arrow Up or X = Rotate CW / Z = Rotate CCW / Space = Hard Drop / C = Hold / P = Pause / R = New Game
-        </div>
+      <div class="preview-panel next-view" aria-label="Next pieces">
+        <div class="preview-label">Next</div>
+        <canvas class="next-canvas" width="96" height="96"></canvas>
+        <canvas class="next-canvas" width="96" height="96"></canvas>
+        <canvas class="next-canvas" width="96" height="96"></canvas>
       </div>
+
+      <div class="touch-controls" aria-label="Touch controls">
+        <button class="play-btn btn-left" data-action="left" type="button">&lt;</button>
+        <button class="play-btn btn-right" data-action="right" type="button">&gt;</button>
+        <button class="play-btn btn-ccw" data-action="rotateCCW" type="button">CCW</button>
+        <button class="play-btn btn-cw" data-action="rotateCW" type="button">CW</button>
+        <button class="play-btn btn-hold" data-action="hold" type="button">HOLD</button>
+        <button class="play-btn btn-soft" data-action="softDrop" type="button">v</button>
+        <button class="play-btn btn-drop" data-action="hardDrop" type="button">DROP</button>
+      </div>
+
+      <div class="score-flash" id="scoreFlash">+0</div>
+      <div class="toast" id="messageEl"><strong>START</strong> Tap START to play.</div>
 
       <div class="overlay show" id="overlay">
         <div class="overlay-panel">
-          <h2 class="overlay-title" id="overlayTitle">Block Drop</h2>
-          <p class="overlay-text" id="overlayText">
-            Fill a full horizontal line to clear it. 4-line clears and T-Spins score highly.<br />
-            The provided wav file is looped as BGM.
-          </p>
-          <div class="overlay-actions">
-            <button class="mini-btn" id="overlayStartBtn" type="button">START</button>
-            <button class="mini-btn" id="overlayRankBtn" type="button">SUBMIT SCORE</button>
+          <h1 class="overlay-title" id="overlayTitle">Block Drop</h1>
+          <p class="overlay-text" id="overlayText">10x20 falling block puzzle. Tap START to begin.</p>
+          <button class="mini-btn" id="overlayStartBtn" type="button">START</button>
+
+          <div class="rank-box" id="rankBox">
+            <div class="rank-title">Ranking</div>
+            <div class="name-row">
+              <input id="playerNameInput" maxlength="16" autocomplete="nickname" placeholder="Player name" />
+              <button class="rank-btn" id="submitRankBtn" type="button">SUBMIT</button>
+            </div>
+            <div class="ranking-status" id="rankingStatusEl"></div>
+            <ol class="ranking-list" id="rankingList"></ol>
+            <button class="rank-btn" id="reloadRankBtn" type="button">REFRESH</button>
           </div>
         </div>
       </div>
     </section>
-
-    <aside class="side-card">
-      <section class="ranking-card">
-        <div class="ranking-head">
-          <div class="ranking-title">Ranking</div>
-          <button class="rank-btn" id="reloadRankBtn" type="button">REFRESH</button>
-        </div>
-        <div class="ranking-status" id="rankingStatusEl">Supabase is not configured. Set it up to enable the shared ranking.</div>
-        <div class="name-row">
-          <input id="playerNameInput" maxlength="16" autocomplete="nickname" placeholder="Player name" />
-          <button class="rank-btn" id="submitRankBtn" type="button">SUBMIT</button>
-        </div>
-        <ol class="ranking-list" id="rankingList"></ol>
-      </section>
-
-      <section class="settings-card">
-        <details>
-          <summary>Supabase ranking setup memo</summary>
-          <p>
-            Enter <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> near the top of this code to enable the shared ranking.
-            Never put a service_role key in public HTML.
-          </p>
-          <pre>create table public.block_drop_scores (
-  id bigint generated by default as identity primary key,
-  player_name text not null,
-  score integer not null,
-  lines integer not null default 0,
-  level integer not null default 1,
-  created_at timestamptz not null default now()
-);
-
-alter table public.block_drop_scores enable row level security;
-
-create policy "Scores are readable by everyone"
-on public.block_drop_scores
-for select
-to anon
-using (true);
-
-create policy "Anyone can insert scores"
-on public.block_drop_scores
-for insert
-to anon
-with check (
-  char_length(player_name) between 1 and 16
-  and score >= 0
-  and lines >= 0
-  and level >= 1
-);</pre>
-        </details>
-      </section>
-
-      <section class="settings-card">
-        <details open>
-          <summary>Implemented features</summary>
-          <p>
-            7 pieces, CW/CCW rotation, NEXT, HOLD, ghost piece, level up every 10 lines, local best score,
-            mobile controls, sound effects, provided BGM loop, 4-line bonus, and T-Spin bonus are implemented.
-          </p>
-        </details>
-      </section>
-    </aside>
   </main>
 
   <script>
     "use strict";
 
-    // =========================================================
-    // Supabase ranking settings
-    // To use it, replace the next two values with your Supabase Project URL and anon public key.
-    // Never put a service_role key in public HTML.
-    // =========================================================
     const SUPABASE_URL = "";
     const SUPABASE_ANON_KEY = "";
     const SUPABASE_TABLE = "block_drop_scores";
 
-    // BGM file. Place it in the same folder as index.html.
     const BGM_PATH = "bgm_classic_etc_korobushka.wav";
 
     const COLS = 10;
@@ -728,10 +546,10 @@ with check (
 
     const boardCanvas = document.getElementById("boardCanvas");
     const boardCtx = boardCanvas.getContext("2d");
-    const nextCanvas = document.getElementById("nextCanvas");
-    const nextCtx = nextCanvas.getContext("2d");
     const holdCanvas = document.getElementById("holdCanvas");
     const holdCtx = holdCanvas.getContext("2d");
+    const nextCanvases = Array.from(document.querySelectorAll(".next-canvas"));
+    const nextCtxs = nextCanvases.map((canvas) => canvas.getContext("2d"));
 
     const scoreEl = document.getElementById("scoreEl");
     const bestEl = document.getElementById("bestEl");
@@ -740,15 +558,11 @@ with check (
     const messageEl = document.getElementById("messageEl");
     const scoreFlash = document.getElementById("scoreFlash");
 
-    const newGameBtn = document.getElementById("newGameBtn");
-    const pauseBtn = document.getElementById("pauseBtn");
-    const muteBtn = document.getElementById("muteBtn");
     const overlay = document.getElementById("overlay");
     const overlayTitle = document.getElementById("overlayTitle");
     const overlayText = document.getElementById("overlayText");
     const overlayStartBtn = document.getElementById("overlayStartBtn");
-    const overlayRankBtn = document.getElementById("overlayRankBtn");
-
+    const rankBox = document.getElementById("rankBox");
     const playerNameInput = document.getElementById("playerNameInput");
     const submitRankBtn = document.getElementById("submitRankBtn");
     const reloadRankBtn = document.getElementById("reloadRankBtn");
@@ -764,11 +578,10 @@ with check (
     bgm.volume = 0.36;
     bgm.preload = "auto";
 
-    let muted = false;
     let board = createEmptyBoard();
     let bag = [];
     let current = null;
-    let nextType = null;
+    let nextQueue = [];
     let holdType = null;
     let canHold = true;
     let score = 0;
@@ -777,31 +590,28 @@ with check (
     let bestScore = Number(localStorage.getItem(LOCAL_BEST_KEY) || 0);
     let gameStarted = false;
     let gameOver = false;
-    let paused = false;
     let dropAccumulator = 0;
     let lastTime = 0;
-    let animationId = 0;
     let flashTimer = 0;
+    let toastTimer = 0;
+    let lineFlashes = [];
+    let particles = [];
 
     init();
 
     function init() {
       playerNameInput.value = localStorage.getItem(LOCAL_NAME_KEY) || "";
+      fillNextQueue();
       bestEl.textContent = formatNumber(bestScore);
-      nextType = takeFromBag();
       drawAll();
       updateRankingStatus();
       loadRanking();
       setupEvents();
-      animationId = requestAnimationFrame(loop);
+      requestAnimationFrame(loop);
     }
 
     function setupEvents() {
-      newGameBtn.addEventListener("click", startGame);
       overlayStartBtn.addEventListener("click", startGame);
-      pauseBtn.addEventListener("click", togglePause);
-      muteBtn.addEventListener("click", toggleMute);
-      overlayRankBtn.addEventListener("click", submitScoreToRanking);
       submitRankBtn.addEventListener("click", submitScoreToRanking);
       reloadRankBtn.addEventListener("click", loadRanking);
 
@@ -810,20 +620,12 @@ with check (
       });
 
       document.addEventListener("keydown", handleKeyDown);
-      document.addEventListener("visibilitychange", () => {
-        if (document.hidden && gameStarted && !gameOver && !paused) {
-          setPaused(true);
-        }
-      });
+      document.addEventListener("touchmove", (event) => event.preventDefault(), { passive: false });
+      document.addEventListener("dblclick", (event) => event.preventDefault(), { passive: false });
 
-      document.querySelectorAll(".control-btn").forEach((button) => {
-        const action = button.dataset.action;
-        setupButtonRepeat(button, action);
+      document.querySelectorAll(".play-btn").forEach((button) => {
+        setupButtonRepeat(button, button.dataset.action);
       });
-
-      document.addEventListener("dblclick", (event) => {
-        event.preventDefault();
-      }, { passive: false });
     }
 
     function setupButtonRepeat(button, action) {
@@ -868,35 +670,19 @@ with check (
       else if (key.toLowerCase() === "z") doAction("rotateCCW");
       else if (key === " " || key === "Spacebar") doAction("hardDrop");
       else if (key.toLowerCase() === "c") doAction("hold");
-      else if (key.toLowerCase() === "p") doAction("pause");
-      else if (key.toLowerCase() === "r") startGame();
     }
 
     function doAction(action) {
       unlockAudio();
+      if (!gameStarted || gameOver || !current) return;
 
-      if (action === "pause") {
-        togglePause();
-        return;
-      }
-
-      if (!gameStarted || gameOver || paused || !current) return;
-
-      if (action === "left") {
-        movePiece(-1, 0, true);
-      } else if (action === "right") {
-        movePiece(1, 0, true);
-      } else if (action === "softDrop") {
-        softDrop();
-      } else if (action === "hardDrop") {
-        hardDrop();
-      } else if (action === "rotateCW") {
-        rotatePiece(1);
-      } else if (action === "rotateCCW") {
-        rotatePiece(-1);
-      } else if (action === "hold") {
-        holdCurrentPiece();
-      }
+      if (action === "left") movePiece(-1, 0, true);
+      else if (action === "right") movePiece(1, 0, true);
+      else if (action === "softDrop") softDrop();
+      else if (action === "hardDrop") hardDrop();
+      else if (action === "rotateCW") rotatePiece(1);
+      else if (action === "rotateCCW") rotatePiece(-1);
+      else if (action === "hold") holdCurrentPiece();
 
       drawAll();
     }
@@ -906,7 +692,8 @@ with check (
       board = createEmptyBoard();
       bag = [];
       current = null;
-      nextType = takeFromBag();
+      nextQueue = [];
+      fillNextQueue();
       holdType = null;
       canHold = true;
       score = 0;
@@ -914,12 +701,13 @@ with check (
       level = 1;
       gameStarted = true;
       gameOver = false;
-      paused = false;
       dropAccumulator = 0;
       lastTime = performance.now();
+      lineFlashes = [];
+      particles = [];
       overlay.classList.remove("show");
-      pauseBtn.textContent = "PAUSE";
-      setMessage("<strong>READY</strong> Clear lines and aim for a high score.", false);
+      rankBox.classList.remove("show");
+      showMessage("<strong>READY</strong> Clear lines and aim high.");
       spawnPiece();
       playBgm();
       drawAll();
@@ -931,26 +719,33 @@ with check (
     }
 
     function loop(time) {
-      const delta = Math.min(80, time - lastTime);
+      const delta = Math.min(80, time - lastTime || 0);
       lastTime = time;
+      let needsDraw = false;
 
-      if (gameStarted && !gameOver && !paused && current) {
+      if (gameStarted && !gameOver && current) {
         dropAccumulator += delta;
         if (dropAccumulator >= getDropInterval()) {
           dropAccumulator = 0;
-          if (!movePiece(0, 1, false)) {
-            lockPiece();
-          }
-          drawAll();
+          if (!movePiece(0, 1, false)) lockPiece();
+          needsDraw = true;
         }
       }
+
+      if (updateEffects(delta)) needsDraw = true;
 
       if (flashTimer > 0 && performance.now() > flashTimer) {
         scoreFlash.classList.remove("show");
         flashTimer = 0;
       }
 
-      animationId = requestAnimationFrame(loop);
+      if (toastTimer > 0 && performance.now() > toastTimer) {
+        messageEl.style.opacity = "0.42";
+        toastTimer = 0;
+      }
+
+      if (needsDraw) drawAll();
+      requestAnimationFrame(loop);
     }
 
     function getDropInterval() {
@@ -958,10 +753,12 @@ with check (
       return Math.max(110, interval);
     }
 
+    function fillNextQueue() {
+      while (nextQueue.length < 3) nextQueue.push(takeFromBag());
+    }
+
     function takeFromBag() {
-      if (bag.length === 0) {
-        bag = shuffle(Object.keys(SHAPES));
-      }
+      if (bag.length === 0) bag = shuffle(Object.keys(SHAPES));
       return bag.pop();
     }
 
@@ -990,23 +787,18 @@ with check (
     }
 
     function spawnPiece(forcedType = null) {
-      const type = forcedType || nextType;
-      if (!forcedType) nextType = takeFromBag();
+      const type = forcedType || nextQueue.shift();
+      if (!forcedType) fillNextQueue();
       current = createPiece(type);
       canHold = true;
       current.rotatedLast = false;
-
-      if (collides(current)) {
-        endGame();
-      }
+      if (collides(current)) endGame();
     }
 
     function movePiece(dx, dy, withSound) {
       if (!current) return false;
       const moved = { ...current, x: current.x + dx, y: current.y + dy };
-      if (collides(moved)) {
-        return false;
-      }
+      if (collides(moved)) return false;
       current.x += dx;
       current.y += dy;
       current.rotatedLast = false;
@@ -1025,11 +817,10 @@ with check (
 
     function hardDrop() {
       let distance = 0;
-      while (movePiece(0, 1, false)) {
-        distance++;
-      }
+      while (movePiece(0, 1, false)) distance++;
       if (distance > 0) addScore(distance * 2, false);
       playHardDropSound();
+      makeImpactDust();
       lockPiece();
     }
 
@@ -1041,21 +832,13 @@ with check (
         return;
       }
 
-      const rotatedMatrix = direction === 1
-        ? rotateMatrixCW(current.matrix)
-        : rotateMatrixCCW(current.matrix);
-
+      const rotatedMatrix = direction === 1 ? rotateMatrixCW(current.matrix) : rotateMatrixCCW(current.matrix);
       const kicks = current.type === "I"
         ? [[0, 0], [1, 0], [-1, 0], [2, 0], [-2, 0], [0, -1], [1, -1], [-1, -1], [0, 1]]
         : [[0, 0], [1, 0], [-1, 0], [0, -1], [1, -1], [-1, -1], [2, 0], [-2, 0], [0, 1]];
 
       for (const [kx, ky] of kicks) {
-        const test = {
-          ...current,
-          matrix: rotatedMatrix,
-          x: current.x + kx,
-          y: current.y + ky
-        };
+        const test = { ...current, matrix: rotatedMatrix, x: current.x + kx, y: current.y + ky };
         if (!collides(test)) {
           current.matrix = rotatedMatrix;
           current.x += kx;
@@ -1073,9 +856,7 @@ with check (
       const size = matrix.length;
       const result = Array.from({ length: size }, () => Array(size).fill(0));
       for (let r = 0; r < size; r++) {
-        for (let c = 0; c < size; c++) {
-          result[c][size - 1 - r] = matrix[r][c];
-        }
+        for (let c = 0; c < size; c++) result[c][size - 1 - r] = matrix[r][c];
       }
       return result;
     }
@@ -1084,9 +865,7 @@ with check (
       const size = matrix.length;
       const result = Array.from({ length: size }, () => Array(size).fill(0));
       for (let r = 0; r < size; r++) {
-        for (let c = 0; c < size; c++) {
-          result[size - 1 - c][r] = matrix[r][c];
-        }
+        for (let c = 0; c < size; c++) result[size - 1 - c][r] = matrix[r][c];
       }
       return result;
     }
@@ -1108,14 +887,13 @@ with check (
       }
       canHold = false;
       playHoldSound();
-      setMessage("<strong>HOLD</strong> Piece swapped.", false);
+      showMessage("<strong>HOLD</strong> Piece swapped.");
     }
 
     function collides(piece) {
-      const matrix = piece.matrix;
-      for (let r = 0; r < matrix.length; r++) {
-        for (let c = 0; c < matrix[r].length; c++) {
-          if (!matrix[r][c]) continue;
+      for (let r = 0; r < piece.matrix.length; r++) {
+        for (let c = 0; c < piece.matrix[r].length; c++) {
+          if (!piece.matrix[r][c]) continue;
           const x = piece.x + c;
           const y = piece.y + r;
           if (x < 0 || x >= COLS || y >= ROWS) return true;
@@ -1127,21 +905,18 @@ with check (
 
     function lockPiece() {
       if (!current || gameOver) return;
-
       const wasTSpin = isTSpin(current);
 
       forEachCell(current, (x, y) => {
-        if (y < 0) {
-          endGame();
-          return;
-        }
-        if (y >= 0 && y < ROWS && x >= 0 && x < COLS) {
-          board[y][x] = current.type;
-        }
+        if (y >= 0 && y < ROWS && x >= 0 && x < COLS) board[y][x] = current.type;
       });
 
-      const cleared = clearLines();
+      const fullRows = getFullRows();
+      const cleared = fullRows.length;
       if (cleared > 0) {
+        createClearEffects(fullRows);
+        clearRows(fullRows);
+
         const beforeLevel = level;
         lines += cleared;
         level = Math.floor(lines / 10) + 1;
@@ -1150,19 +925,19 @@ with check (
         addScore(points, true);
 
         if (wasTSpin) {
-          setMessage(`<strong>T-SPIN!</strong> +${formatNumber(points)} / Same score as a 4-line clear.`, true);
+          showMessage(`<strong>T-SPIN</strong> +${formatNumber(points)}`);
           playTSpinSound();
         } else if (cleared === 4) {
-          setMessage(`<strong>BLOCK DROP!</strong> 4-line clear +${formatNumber(points)}`, true);
+          showMessage(`<strong>4 LINE</strong> +${formatNumber(points)}`);
           playClearSound(true);
         } else {
-          setMessage(`<strong>${cleared} LINE</strong> +${formatNumber(points)}`, false);
+          showMessage(`<strong>${cleared} LINE</strong> +${formatNumber(points)}`);
           playClearSound(false);
         }
 
         if (level > beforeLevel) {
           playLevelUpSound();
-          setTimeout(() => setMessage(`<strong>LEVEL UP!</strong> Level ${level} reached.`, true), 240);
+          setTimeout(() => showMessage(`<strong>LEVEL UP</strong> Level ${level}`), 240);
         }
       } else {
         playLockSound();
@@ -1175,29 +950,27 @@ with check (
     function forEachCell(piece, callback) {
       for (let r = 0; r < piece.matrix.length; r++) {
         for (let c = 0; c < piece.matrix[r].length; c++) {
-          if (piece.matrix[r][c]) {
-            callback(piece.x + c, piece.y + r, c, r);
-          }
+          if (piece.matrix[r][c]) callback(piece.x + c, piece.y + r, c, r);
         }
       }
     }
 
-    function clearLines() {
-      let count = 0;
+    function getFullRows() {
+      const rows = [];
       for (let y = ROWS - 1; y >= 0; y--) {
-        if (board[y].every(Boolean)) {
-          board.splice(y, 1);
-          board.unshift(Array(COLS).fill(null));
-          count++;
-          y++;
-        }
+        if (board[y].every(Boolean)) rows.push(y);
       }
-      return count;
+      return rows;
+    }
+
+    function clearRows(rows) {
+      const set = new Set(rows);
+      board = board.filter((row, index) => !set.has(index));
+      while (board.length < ROWS) board.unshift(Array(COLS).fill(null));
     }
 
     function isTSpin(piece) {
       if (!piece || piece.type !== "T" || !piece.rotatedLast) return false;
-
       const centerX = piece.x + 1;
       const centerY = piece.y + 1;
       const corners = [
@@ -1209,11 +982,8 @@ with check (
 
       let occupied = 0;
       for (const [x, y] of corners) {
-        if (x < 0 || x >= COLS || y >= ROWS) {
-          occupied++;
-        } else if (y >= 0 && board[y][x]) {
-          occupied++;
-        }
+        if (x < 0 || x >= COLS || y >= ROWS) occupied++;
+        else if (y >= 0 && board[y][x]) occupied++;
       }
       return occupied >= 3;
     }
@@ -1225,15 +995,19 @@ with check (
         localStorage.setItem(LOCAL_BEST_KEY, String(bestScore));
       }
       updateUi();
-      if (flash && amount > 0) {
-        showScoreFlash(amount);
-      }
+      if (flash && amount > 0) showScoreFlash(amount);
     }
 
     function showScoreFlash(amount) {
       scoreFlash.textContent = `+${formatNumber(amount)}`;
       scoreFlash.classList.add("show");
       flashTimer = performance.now() + 900;
+    }
+
+    function showMessage(html) {
+      messageEl.innerHTML = html;
+      messageEl.style.opacity = "0.94";
+      toastTimer = performance.now() + 1600;
     }
 
     function endGame() {
@@ -1244,42 +1018,13 @@ with check (
       playGameOverSound();
       updateUi();
       overlayTitle.textContent = "Game Over";
-      overlayText.innerHTML = `SCORE ${formatNumber(score)} / LINES ${lines} / LEVEL ${level}<br>Score submission works after Supabase is configured.`;
+      overlayText.innerHTML = `Score ${formatNumber(score)} / Lines ${lines} / Level ${level}`;
       overlayStartBtn.textContent = "RETRY";
+      rankBox.classList.add("show");
       overlay.classList.add("show");
-      setMessage("<strong>GAME OVER</strong> Press NEW GAME to try again.", true);
-    }
-
-    function togglePause() {
-      if (!gameStarted || gameOver) return;
-      setPaused(!paused);
-    }
-
-    function setPaused(value) {
-      paused = value;
-      pauseBtn.textContent = paused ? "RESUME" : "PAUSE";
-      if (paused) {
-        pauseBgm(false);
-        overlayTitle.textContent = "Paused";
-        overlayText.innerHTML = "Paused. BGM will resume when the game resumes.";
-        overlayStartBtn.textContent = "RESUME";
-        overlay.classList.add("show");
-        overlayStartBtn.onclick = () => setPaused(false);
-      } else {
-        overlay.classList.remove("show");
-        overlayStartBtn.textContent = "START";
-        overlayStartBtn.onclick = startGame;
-        lastTime = performance.now();
-        playBgm();
-      }
-      drawAll();
-    }
-
-    function toggleMute() {
-      muted = !muted;
-      bgm.muted = muted;
-      muteBtn.textContent = muted ? "SOUND OFF" : "SOUND ON";
-      if (!muted && gameStarted && !paused && !gameOver) playBgm();
+      updateRankingStatus();
+      loadRanking();
+      showMessage("<strong>GAME OVER</strong>");
     }
 
     function unlockAudio() {
@@ -1287,15 +1032,12 @@ with check (
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (AudioContext) audioCtx = new AudioContext();
       }
-      if (audioCtx?.state === "suspended") {
-        audioCtx.resume();
-      }
+      if (audioCtx?.state === "suspended") audioCtx.resume();
     }
 
     function playBgm() {
-      if (muted) return;
       bgm.play().catch(() => {
-        setMessage("<strong>BGM waiting</strong> Due to browser autoplay restrictions, it will play after your next action.", false);
+        showMessage("<strong>BGM</strong> Tap once more if sound is blocked.");
       });
     }
 
@@ -1305,7 +1047,7 @@ with check (
     }
 
     function playTone({ frequency, duration = 0.08, type = "square", volume = 0.05, startTime = 0 }) {
-      if (muted || !audioCtx) return;
+      if (!audioCtx) return;
       const now = audioCtx.currentTime + startTime;
       const oscillator = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
@@ -1329,8 +1071,9 @@ with check (
     }
 
     function playHardDropSound() {
-      playTone({ frequency: 130, duration: 0.08, type: "sawtooth", volume: 0.07 });
-      playTone({ frequency: 90, duration: 0.1, type: "square", volume: 0.04, startTime: 0.03 });
+      playTone({ frequency: 126, duration: 0.1, type: "sawtooth", volume: 0.085 });
+      playTone({ frequency: 72, duration: 0.12, type: "square", volume: 0.055, startTime: 0.035 });
+      playTone({ frequency: 48, duration: 0.09, type: "sawtooth", volume: 0.04, startTime: 0.07 });
     }
 
     function playLockSound() {
@@ -1340,13 +1083,14 @@ with check (
     function playClearSound(big) {
       const notes = big ? [523.25, 659.25, 783.99, 1046.5] : [440, 554.37, 659.25];
       notes.forEach((frequency, index) => {
-        playTone({ frequency, duration: 0.11, type: "triangle", volume: 0.06, startTime: index * 0.055 });
+        playTone({ frequency, duration: 0.13, type: "triangle", volume: 0.075, startTime: index * 0.052 });
       });
+      playTone({ frequency: 146.83, duration: 0.16, type: "sawtooth", volume: 0.035, startTime: 0.03 });
     }
 
     function playTSpinSound() {
       [392, 587.33, 783.99, 1174.66].forEach((frequency, index) => {
-        playTone({ frequency, duration: 0.13, type: "triangle", volume: 0.065, startTime: index * 0.055 });
+        playTone({ frequency, duration: 0.14, type: "triangle", volume: 0.075, startTime: index * 0.055 });
       });
     }
 
@@ -1371,9 +1115,84 @@ with check (
       });
     }
 
+    function createClearEffects(rows) {
+      rows.forEach((row) => {
+        const visibleRow = row - HIDDEN_ROWS;
+        if (visibleRow < 0) return;
+        lineFlashes.push({ row: visibleRow, age: 0, duration: 380 });
+
+        for (let x = 0; x < COLS; x++) {
+          const type = board[row][x] || "I";
+          const cx = x * CELL + CELL / 2;
+          const cy = visibleRow * CELL + CELL / 2;
+          for (let i = 0; i < 4; i++) {
+            particles.push({
+              x: cx + (Math.random() - 0.5) * 10,
+              y: cy + (Math.random() - 0.5) * 10,
+              vx: (Math.random() - 0.5) * 180,
+              vy: -80 - Math.random() * 160,
+              gravity: 420 + Math.random() * 180,
+              size: 3 + Math.random() * 5,
+              type,
+              age: 0,
+              duration: 520 + Math.random() * 220,
+              spin: (Math.random() - 0.5) * 8,
+              angle: Math.random() * Math.PI
+            });
+          }
+        }
+      });
+    }
+
+    function makeImpactDust() {
+      if (!current) return;
+      forEachCell(current, (x, y) => {
+        if (y < HIDDEN_ROWS) return;
+        const px = x * CELL + CELL / 2;
+        const py = (y - HIDDEN_ROWS + 1) * CELL - 3;
+        for (let i = 0; i < 2; i++) {
+          particles.push({
+            x: px,
+            y: py,
+            vx: (Math.random() - 0.5) * 120,
+            vy: -30 - Math.random() * 70,
+            gravity: 360,
+            size: 2 + Math.random() * 3,
+            type: current.type,
+            age: 0,
+            duration: 280 + Math.random() * 120,
+            spin: 0,
+            angle: 0
+          });
+        }
+      });
+    }
+
+    function updateEffects(delta) {
+      let changed = false;
+      if (lineFlashes.length) {
+        changed = true;
+        lineFlashes.forEach((flash) => { flash.age += delta; });
+        lineFlashes = lineFlashes.filter((flash) => flash.age < flash.duration);
+      }
+      if (particles.length) {
+        changed = true;
+        const dt = delta / 1000;
+        particles.forEach((particle) => {
+          particle.age += delta;
+          particle.x += particle.vx * dt;
+          particle.y += particle.vy * dt;
+          particle.vy += particle.gravity * dt;
+          particle.angle += particle.spin * dt;
+        });
+        particles = particles.filter((particle) => particle.age < particle.duration);
+      }
+      return changed;
+    }
+
     function drawAll() {
       drawBoard();
-      drawPreview(nextCtx, nextType);
+      nextCtxs.forEach((ctx, index) => drawPreview(ctx, nextQueue[index]));
       drawPreview(holdCtx, holdType, !canHold && holdType !== null);
       updateUi();
     }
@@ -1394,24 +1213,14 @@ with check (
         forEachCell(ghost, (x, y) => {
           if (y >= HIDDEN_ROWS) drawCell(boardCtx, x, y - HIDDEN_ROWS, current.type, 0.22, true);
         });
-
         forEachCell(current, (x, y) => {
           if (y >= HIDDEN_ROWS) drawCell(boardCtx, x, y - HIDDEN_ROWS, current.type, 1);
         });
       }
 
+      drawClearEffects();
       drawGrid();
-
-      if (paused) {
-        boardCtx.save();
-        boardCtx.fillStyle = "rgba(0, 0, 0, 0.32)";
-        boardCtx.fillRect(0, 0, boardCanvas.width, boardCanvas.height);
-        boardCtx.fillStyle = "rgba(255, 255, 255, 0.92)";
-        boardCtx.font = "bold 34px system-ui, sans-serif";
-        boardCtx.textAlign = "center";
-        boardCtx.fillText("PAUSED", boardCanvas.width / 2, boardCanvas.height / 2);
-        boardCtx.restore();
-      }
+      drawParticles();
     }
 
     function drawBoardBackground() {
@@ -1437,6 +1246,40 @@ with check (
         boardCtx.moveTo(0, y * CELL + 0.5);
         boardCtx.lineTo(boardCanvas.width, y * CELL + 0.5);
         boardCtx.stroke();
+      }
+      boardCtx.restore();
+    }
+
+    function drawClearEffects() {
+      boardCtx.save();
+      for (const flash of lineFlashes) {
+        const t = flash.age / flash.duration;
+        const alpha = Math.max(0, 1 - t);
+        const y = flash.row * CELL;
+        const glow = boardCtx.createLinearGradient(0, y, boardCanvas.width, y + CELL);
+        glow.addColorStop(0, `rgba(99, 220, 255, ${0.10 * alpha})`);
+        glow.addColorStop(0.5, `rgba(255, 241, 154, ${0.85 * alpha})`);
+        glow.addColorStop(1, `rgba(255, 109, 142, ${0.12 * alpha})`);
+        boardCtx.fillStyle = glow;
+        boardCtx.fillRect(0, y, boardCanvas.width, CELL);
+        boardCtx.strokeStyle = `rgba(255, 255, 255, ${0.9 * alpha})`;
+        boardCtx.lineWidth = 2;
+        boardCtx.strokeRect(3, y + 3, boardCanvas.width - 6, CELL - 6);
+      }
+      boardCtx.restore();
+    }
+
+    function drawParticles() {
+      boardCtx.save();
+      for (const particle of particles) {
+        const t = particle.age / particle.duration;
+        const alpha = Math.max(0, 1 - t);
+        boardCtx.globalAlpha = alpha;
+        boardCtx.translate(particle.x, particle.y);
+        boardCtx.rotate(particle.angle);
+        boardCtx.fillStyle = COLORS[particle.type] || "#ffffff";
+        boardCtx.fillRect(-particle.size / 2, -particle.size / 2, particle.size, particle.size);
+        boardCtx.setTransform(1, 0, 0, 1, 0, 0);
       }
       boardCtx.restore();
     }
@@ -1482,22 +1325,22 @@ with check (
 
       if (!type) {
         ctx.fillStyle = "rgba(255, 255, 255, 0.35)";
-        ctx.font = "bold 16px system-ui, sans-serif";
+        ctx.font = "bold 13px system-ui, sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText("EMPTY", size / 2, size / 2 + 5);
+        ctx.fillText("EMPTY", size / 2, size / 2 + 4);
         ctx.restore();
         return;
       }
 
       const matrix = SHAPES[type];
-      const cell = type === "I" ? 24 : 28;
+      const cell = type === "I" ? 18 : 21;
       const occupied = getOccupiedBounds(matrix);
       const width = (occupied.maxC - occupied.minC + 1) * cell;
       const height = (occupied.maxR - occupied.minR + 1) * cell;
       const offsetX = Math.round((size - width) / 2) - occupied.minC * cell;
       const offsetY = Math.round((size - height) / 2) - occupied.minR * cell;
 
-      ctx.globalAlpha = dimmed ? 0.35 : 1;
+      ctx.globalAlpha = dimmed ? 0.34 : 1;
       for (let r = 0; r < matrix.length; r++) {
         for (let c = 0; c < matrix[r].length; c++) {
           if (!matrix[r][c]) continue;
@@ -1513,7 +1356,7 @@ with check (
       gradient.addColorStop(0, lighten(color, 0.32));
       gradient.addColorStop(1, darken(color, 0.2));
       ctx.fillStyle = gradient;
-      roundRect(ctx, px + 2, py + 2, cell - 4, cell - 4, 6);
+      roundRect(ctx, px + 2, py + 2, cell - 4, cell - 4, 5);
       ctx.fill();
       ctx.strokeStyle = "rgba(255, 255, 255, 0.32)";
       ctx.stroke();
@@ -1537,13 +1380,8 @@ with check (
     }
 
     function getGhostPiece() {
-      const ghost = {
-        ...current,
-        matrix: current.matrix
-      };
-      while (!collides({ ...ghost, y: ghost.y + 1 })) {
-        ghost.y++;
-      }
+      const ghost = { ...current, matrix: current.matrix };
+      while (!collides({ ...ghost, y: ghost.y + 1 })) ghost.y++;
       return ghost;
     }
 
@@ -1585,13 +1423,6 @@ with check (
       bestEl.textContent = formatNumber(bestScore);
       levelEl.textContent = level;
       linesEl.textContent = lines;
-      pauseBtn.textContent = paused ? "RESUME" : "PAUSE";
-      muteBtn.textContent = muted ? "SOUND OFF" : "SOUND ON";
-    }
-
-    function setMessage(html, important) {
-      messageEl.innerHTML = html;
-      messageEl.style.borderColor = important ? "rgba(255, 225, 122, 0.38)" : "rgba(255, 255, 255, 0.08)";
     }
 
     function formatNumber(value) {
@@ -1616,8 +1447,8 @@ with check (
         return;
       }
       rankingStatusEl.textContent = isSupabaseReady()
-        ? "Supabase is configured. You can submit your score after game over."
-        : "Supabase is not configured. Only the local best score will be saved on this device.";
+        ? "Supabase is configured. You can submit your score."
+        : "Supabase is not configured. Local best is saved on this device.";
     }
 
     async function loadRanking() {
@@ -1631,10 +1462,7 @@ with check (
       try {
         updateRankingStatus("Loading ranking...");
         const url = `${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?select=player_name,score,lines,level,created_at&order=score.desc,lines.desc,level.desc&limit=10`;
-        const response = await fetch(url, {
-          method: "GET",
-          headers: getSupabaseHeaders()
-        });
+        const response = await fetch(url, { method: "GET", headers: getSupabaseHeaders() });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const rows = await response.json();
         if (!rows.length) {
@@ -1648,7 +1476,7 @@ with check (
         updateRankingStatus("Ranking loaded.");
       } catch (error) {
         console.error(error);
-        updateRankingStatus("Failed to load ranking. Check Supabase settings and RLS policies. ");
+        updateRankingStatus("Failed to load ranking. Check Supabase settings and RLS policies.");
       }
     }
 
@@ -1658,7 +1486,7 @@ with check (
       localStorage.setItem(LOCAL_NAME_KEY, playerName);
 
       if (!isSupabaseReady()) {
-        updateRankingStatus("Cannot submit because Supabase is not configured. Set the URL and anon key near the top of the code.");
+        updateRankingStatus("Cannot submit because Supabase is not configured.");
         playErrorSound();
         return;
       }
@@ -1673,10 +1501,7 @@ with check (
         updateRankingStatus("Submitting score...");
         const response = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}`, {
           method: "POST",
-          headers: {
-            ...getSupabaseHeaders(),
-            Prefer: "return=minimal"
-          },
+          headers: { ...getSupabaseHeaders(), Prefer: "return=minimal" },
           body: JSON.stringify({
             player_name: playerName.slice(0, 16),
             score,
@@ -1684,7 +1509,6 @@ with check (
             level
           })
         });
-
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         updateRankingStatus("Score submitted. Refreshing ranking.");
         playLevelUpSound();
