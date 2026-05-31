@@ -51,13 +51,28 @@
       height: 100dvh;
       display: grid;
       place-items: center;
-      padding: max(4px, env(safe-area-inset-top)) max(4px, env(safe-area-inset-right)) max(4px, env(safe-area-inset-bottom)) max(4px, env(safe-area-inset-left));
+      padding: 0;
+    }
+
+    .game-shell {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      --edge: max(6px, env(safe-area-inset-left));
+      --btn-size: clamp(48px, 15vmin, 84px);
+      --small-btn: clamp(44px, 13vmin, 72px);
+      --preview-size: clamp(48px, 14vmin, 82px);
     }
 
     .board-shell {
-      position: relative;
-      width: min(96vw, 48vh, 420px);
-      width: min(96vw, 48dvh, 420px);
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: min(62vw, 48vh, 420px);
+      width: min(62vw, 48dvh, 420px);
       aspect-ratio: 10 / 20;
       border-radius: 18px;
       overflow: hidden;
@@ -79,8 +94,8 @@
     .hud {
       position: absolute;
       top: 1.2%;
-      left: 24%;
-      right: 20%;
+      left: 4%;
+      right: 4%;
       z-index: 3;
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -118,11 +133,12 @@
 
     .preview-panel {
       position: absolute;
-      z-index: 3;
+      z-index: 6;
+      width: var(--preview-size);
       border: 1px solid rgba(164, 218, 255, 0.2);
-      background: rgba(5, 12, 22, 0.5);
+      background: rgba(5, 12, 22, 0.52);
       border-radius: 13px;
-      padding: 5px;
+      padding: 4px;
       box-shadow: 0 8px 22px rgba(0, 0, 0, 0.24);
       backdrop-filter: blur(8px);
       pointer-events: none;
@@ -131,7 +147,7 @@
     .preview-label {
       color: var(--muted);
       text-align: center;
-      font-size: clamp(0.48rem, 1.9vw, 0.66rem);
+      font-size: clamp(0.48rem, 1.9vmin, 0.66rem);
       letter-spacing: 0.1em;
       line-height: 1;
       margin-bottom: 4px;
@@ -139,15 +155,13 @@
     }
 
     .hold-view {
-      top: 1.2%;
-      left: 1.5%;
-      width: 20%;
+      top: max(7px, env(safe-area-inset-top));
+      left: max(7px, env(safe-area-inset-left));
     }
 
     .next-view {
-      top: 1.2%;
-      right: 1.5%;
-      width: 16.5%;
+      top: max(7px, env(safe-area-inset-top));
+      right: max(7px, env(safe-area-inset-right));
     }
 
     .preview-panel canvas {
@@ -161,7 +175,7 @@
     .touch-controls {
       position: absolute;
       inset: 0;
-      z-index: 4;
+      z-index: 7;
       pointer-events: none;
     }
 
@@ -172,77 +186,76 @@
       border: 1px solid rgba(210, 238, 255, 0.36);
       border-radius: 18px;
       color: var(--text);
-      background: linear-gradient(180deg, rgba(54, 92, 132, 0.6), rgba(13, 29, 52, 0.58));
+      background: linear-gradient(180deg, rgba(54, 92, 132, 0.66), rgba(13, 29, 52, 0.64));
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.14),
         0 10px 22px rgba(0, 0, 0, 0.22);
       backdrop-filter: blur(8px);
       cursor: pointer;
       pointer-events: auto;
-      font-weight: 900;
-      font-size: clamp(0.78rem, 3.4vw, 1.2rem);
+      font-weight: 1000;
       line-height: 1;
       touch-action: none;
     }
 
     .play-btn:active {
-      transform: scale(0.98) translateY(1px);
-      background: linear-gradient(180deg, rgba(84, 136, 188, 0.7), rgba(20, 48, 84, 0.66));
+      transform: scale(0.97) translateY(1px);
+      background: linear-gradient(180deg, rgba(84, 136, 188, 0.76), rgba(20, 48, 84, 0.72));
+    }
+
+    .btn-left,
+    .btn-right {
+      width: var(--btn-size);
+      height: calc(var(--btn-size) * 1.14);
+      top: 54%;
+      font-size: clamp(2rem, 11vmin, 3.7rem);
     }
 
     .btn-left {
-      left: 3.4%;
-      bottom: 6.3%;
-      width: 26%;
-      height: 13%;
-      font-size: clamp(1.5rem, 8vw, 2.5rem);
+      left: max(7px, env(safe-area-inset-left));
     }
 
     .btn-right {
-      right: 3.4%;
-      bottom: 6.3%;
-      width: 26%;
-      height: 13%;
-      font-size: clamp(1.5rem, 8vw, 2.5rem);
+      right: max(7px, env(safe-area-inset-right));
+    }
+
+    .btn-ccw,
+    .btn-cw,
+    .btn-soft,
+    .btn-drop,
+    .btn-hold {
+      width: var(--small-btn);
+      height: var(--small-btn);
+      font-size: clamp(1.55rem, 8vmin, 2.5rem);
     }
 
     .btn-ccw {
-      left: 32.2%;
-      bottom: 18.8%;
-      width: 15.5%;
-      height: 8.6%;
+      left: max(7px, env(safe-area-inset-left));
+      top: 36%;
     }
 
     .btn-cw {
-      left: 52.3%;
-      bottom: 18.8%;
-      width: 15.5%;
-      height: 8.6%;
+      right: max(7px, env(safe-area-inset-right));
+      top: 30%;
     }
 
     .btn-hold {
-      left: 32.2%;
-      bottom: 6.3%;
-      width: 15.5%;
-      height: 8.6%;
+      left: max(7px, env(safe-area-inset-left));
+      top: 22%;
       color: var(--warn);
+      font-size: clamp(0.68rem, 2.5vmin, 0.95rem);
+      letter-spacing: 0.04em;
     }
 
     .btn-soft {
-      right: 32.2%;
-      bottom: 18.8%;
-      width: 15.5%;
-      height: 8.6%;
-      font-size: clamp(1.15rem, 5.8vw, 1.9rem);
+      right: max(7px, env(safe-area-inset-right));
+      top: 43%;
     }
 
     .btn-drop {
-      right: 32.2%;
-      bottom: 6.3%;
-      width: 15.5%;
-      height: 8.6%;
+      right: max(7px, env(safe-area-inset-right));
+      top: 70%;
       color: var(--accent);
-      font-size: clamp(0.66rem, 2.6vw, 0.95rem);
     }
 
     .score-flash {
@@ -292,7 +305,7 @@
     .overlay {
       position: absolute;
       inset: 0;
-      z-index: 10;
+      z-index: 20;
       display: none;
       place-items: center;
       padding: 14px;
@@ -305,7 +318,7 @@
     }
 
     .overlay-panel {
-      width: min(92%, 360px);
+      width: min(92vw, 380px);
       max-height: 92%;
       overflow: auto;
       border: 1px solid rgba(164, 218, 255, 0.28);
@@ -339,6 +352,15 @@
       cursor: pointer;
       font-weight: 850;
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 8px 20px rgba(0, 0, 0, 0.18);
+    }
+
+    .ranking-open-btn {
+      display: none;
+      margin-left: 6px;
+    }
+
+    .ranking-open-btn.show {
+      display: inline-block;
     }
 
     .rank-box {
@@ -420,7 +442,8 @@
 </head>
 <body>
   <main class="app" aria-label="Block Drop game">
-    <section class="board-shell">
+    <section class="game-shell">
+      <section class="board-shell">
       <canvas id="boardCanvas" width="320" height="640" aria-label="Board"></canvas>
 
       <div class="hud" aria-label="Status">
@@ -429,6 +452,11 @@
         <div class="stat"><div class="stat-label">Level</div><div class="stat-value" id="levelEl">1</div></div>
         <div class="stat"><div class="stat-label">Lines</div><div class="stat-value" id="linesEl">0</div></div>
       </div>
+
+      <div class="score-flash" id="scoreFlash">+0</div>
+      <div class="toast" id="messageEl"><strong>START</strong> Tap START to play.</div>
+
+      </section>
 
       <div class="preview-panel hold-view" aria-label="Hold piece">
         <div class="preview-label">Hold</div>
@@ -443,23 +471,21 @@
       </div>
 
       <div class="touch-controls" aria-label="Touch controls">
-        <button class="play-btn btn-left" data-action="left" type="button">&lt;</button>
-        <button class="play-btn btn-right" data-action="right" type="button">&gt;</button>
-        <button class="play-btn btn-ccw" data-action="rotateCCW" type="button">CCW</button>
-        <button class="play-btn btn-cw" data-action="rotateCW" type="button">CW</button>
+        <button class="play-btn btn-left" data-action="left" type="button">&#8592;</button>
+        <button class="play-btn btn-right" data-action="right" type="button">&#8594;</button>
+        <button class="play-btn btn-ccw" data-action="rotateCCW" type="button">&#8634;</button>
+        <button class="play-btn btn-cw" data-action="rotateCW" type="button">&#8635;</button>
         <button class="play-btn btn-hold" data-action="hold" type="button">HOLD</button>
-        <button class="play-btn btn-soft" data-action="softDrop" type="button">v</button>
-        <button class="play-btn btn-drop" data-action="hardDrop" type="button">DROP</button>
+        <button class="play-btn btn-soft" data-action="softDrop" type="button">&#8595;</button>
+        <button class="play-btn btn-drop" data-action="hardDrop" type="button">&#8659;</button>
       </div>
-
-      <div class="score-flash" id="scoreFlash">+0</div>
-      <div class="toast" id="messageEl"><strong>START</strong> Tap START to play.</div>
 
       <div class="overlay show" id="overlay">
         <div class="overlay-panel">
           <h1 class="overlay-title" id="overlayTitle">Block Drop</h1>
           <p class="overlay-text" id="overlayText">10x20 falling block puzzle. Tap START to begin.</p>
           <button class="mini-btn" id="overlayStartBtn" type="button">START</button>
+          <button class="mini-btn ranking-open-btn" id="overlayRankingBtn" type="button">RANKING</button>
 
           <div class="rank-box" id="rankBox">
             <div class="rank-title">Ranking</div>
@@ -562,6 +588,7 @@
     const overlayTitle = document.getElementById("overlayTitle");
     const overlayText = document.getElementById("overlayText");
     const overlayStartBtn = document.getElementById("overlayStartBtn");
+    const overlayRankingBtn = document.getElementById("overlayRankingBtn");
     const rankBox = document.getElementById("rankBox");
     const playerNameInput = document.getElementById("playerNameInput");
     const submitRankBtn = document.getElementById("submitRankBtn");
@@ -612,6 +639,7 @@
 
     function setupEvents() {
       overlayStartBtn.addEventListener("click", startGame);
+      overlayRankingBtn.addEventListener("click", toggleRankingPanel);
       submitRankBtn.addEventListener("click", submitScoreToRanking);
       reloadRankBtn.addEventListener("click", loadRanking);
 
@@ -626,6 +654,19 @@
       document.querySelectorAll(".play-btn").forEach((button) => {
         setupButtonRepeat(button, button.dataset.action);
       });
+    }
+
+    function toggleRankingPanel() {
+      const willOpen = !rankBox.classList.contains("show");
+      if (willOpen) {
+        rankBox.classList.add("show");
+        overlayRankingBtn.textContent = "CLOSE";
+        updateRankingStatus();
+        loadRanking();
+      } else {
+        rankBox.classList.remove("show");
+        overlayRankingBtn.textContent = "RANKING";
+      }
     }
 
     function setupButtonRepeat(button, action) {
@@ -706,6 +747,8 @@
       lineFlashes = [];
       particles = [];
       overlay.classList.remove("show");
+      overlayRankingBtn.classList.remove("show");
+      overlayRankingBtn.textContent = "RANKING";
       rankBox.classList.remove("show");
       showMessage("<strong>READY</strong> Clear lines and aim high.");
       spawnPiece();
@@ -1020,10 +1063,11 @@
       overlayTitle.textContent = "Game Over";
       overlayText.innerHTML = `Score ${formatNumber(score)} / Lines ${lines} / Level ${level}`;
       overlayStartBtn.textContent = "RETRY";
-      rankBox.classList.add("show");
+      overlayRankingBtn.classList.add("show");
+      overlayRankingBtn.textContent = "RANKING";
+      rankBox.classList.remove("show");
       overlay.classList.add("show");
       updateRankingStatus();
-      loadRanking();
       showMessage("<strong>GAME OVER</strong>");
     }
 
