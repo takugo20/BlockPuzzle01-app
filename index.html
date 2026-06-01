@@ -64,6 +64,8 @@
       --btn-size: clamp(48px, 15vmin, 84px);
       --small-btn: clamp(44px, 13vmin, 72px);
       --preview-size: clamp(48px, 14vmin, 82px);
+      --control-bottom: max(10px, env(safe-area-inset-bottom));
+      --control-gap: clamp(8px, 1.8vmin, 14px);
     }
 
     .board-shell {
@@ -207,7 +209,8 @@
     .btn-right {
       width: var(--btn-size);
       height: calc(var(--btn-size) * 1.14);
-      top: 54%;
+      top: auto;
+      bottom: var(--control-bottom);
       font-size: clamp(2rem, 11vmin, 3.7rem);
     }
 
@@ -230,18 +233,21 @@
     }
 
     .btn-ccw {
-      left: max(7px, env(safe-area-inset-left));
-      top: 36%;
+      left: calc(var(--edge) + var(--btn-size) + var(--control-gap));
+      top: auto;
+      bottom: var(--control-bottom);
     }
 
     .btn-cw {
-      right: max(7px, env(safe-area-inset-right));
-      top: 30%;
+      right: calc(var(--edge) + var(--btn-size) + var(--control-gap));
+      top: auto;
+      bottom: var(--control-bottom);
     }
 
     .btn-hold {
       left: max(7px, env(safe-area-inset-left));
-      top: 22%;
+      top: auto;
+      bottom: calc(var(--control-bottom) + var(--btn-size) + var(--control-gap));
       color: var(--warn);
       font-size: clamp(0.68rem, 2.5vmin, 0.95rem);
       letter-spacing: 0.04em;
@@ -249,12 +255,14 @@
 
     .btn-soft {
       right: max(7px, env(safe-area-inset-right));
-      top: 43%;
+      top: auto;
+      bottom: calc(var(--control-bottom) + var(--btn-size) + var(--small-btn) + var(--control-gap) + 8px);
     }
 
     .btn-drop {
       right: max(7px, env(safe-area-inset-right));
-      top: 70%;
+      top: auto;
+      bottom: calc(var(--control-bottom) + var(--btn-size) + var(--control-gap));
       color: var(--accent);
     }
 
