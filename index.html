@@ -66,6 +66,8 @@
       --preview-size: clamp(48px, 14vmin, 82px);
       --control-bottom: max(10px, env(safe-area-inset-bottom));
       --control-gap: clamp(8px, 1.8vmin, 14px);
+      --bottom-row-height: calc(var(--btn-size) * 1.14);
+      --bottom-row-width: calc(var(--btn-size) * 2 + var(--small-btn) * 2 + var(--control-gap) * 3);
     }
 
     .board-shell {
@@ -188,6 +190,7 @@
       border: 1px solid rgba(210, 238, 255, 0.36);
       border-radius: 18px;
       color: var(--text);
+      opacity: 0.5;
       background: linear-gradient(180deg, rgba(54, 92, 132, 0.66), rgba(13, 29, 52, 0.64));
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.14),
@@ -215,11 +218,12 @@
     }
 
     .btn-left {
-      left: max(7px, env(safe-area-inset-left));
+      left: calc(50% - var(--bottom-row-width) / 2);
     }
 
     .btn-right {
-      right: max(7px, env(safe-area-inset-right));
+      left: calc(50% - var(--bottom-row-width) / 2 + var(--btn-size) + var(--control-gap) + var(--small-btn) + var(--control-gap) + var(--small-btn) + var(--control-gap));
+      right: auto;
     }
 
     .btn-ccw,
@@ -233,13 +237,14 @@
     }
 
     .btn-ccw {
-      left: calc(var(--edge) + var(--btn-size) + var(--control-gap));
+      left: calc(50% - var(--bottom-row-width) / 2 + var(--btn-size) + var(--control-gap));
       top: auto;
       bottom: var(--control-bottom);
     }
 
     .btn-cw {
-      right: calc(var(--edge) + var(--btn-size) + var(--control-gap));
+      left: calc(50% - var(--bottom-row-width) / 2 + var(--btn-size) + var(--control-gap) + var(--small-btn) + var(--control-gap));
+      right: auto;
       top: auto;
       bottom: var(--control-bottom);
     }
@@ -247,7 +252,7 @@
     .btn-hold {
       left: max(7px, env(safe-area-inset-left));
       top: auto;
-      bottom: calc(var(--control-bottom) + var(--btn-size) + var(--control-gap));
+      bottom: calc(var(--control-bottom) + var(--bottom-row-height) + var(--control-gap));
       color: var(--warn);
       font-size: clamp(0.68rem, 2.5vmin, 0.95rem);
       letter-spacing: 0.04em;
@@ -256,13 +261,13 @@
     .btn-soft {
       right: max(7px, env(safe-area-inset-right));
       top: auto;
-      bottom: calc(var(--control-bottom) + var(--btn-size) + var(--small-btn) + var(--control-gap) + 8px);
+      bottom: calc(var(--control-bottom) + var(--bottom-row-height) + var(--small-btn) + var(--control-gap) * 2);
     }
 
     .btn-drop {
       right: max(7px, env(safe-area-inset-right));
       top: auto;
-      bottom: calc(var(--control-bottom) + var(--btn-size) + var(--control-gap));
+      bottom: calc(var(--control-bottom) + var(--bottom-row-height) + var(--control-gap));
       color: var(--accent);
     }
 
