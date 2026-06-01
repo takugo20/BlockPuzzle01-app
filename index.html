@@ -530,6 +530,8 @@
 
     const SCORE_TABLE = [0, 100, 300, 500, 800];
     const T_SPIN_SCORE = 800;
+    const LOCK_DELAY_MS = 500;
+    const LOCK_ACTION_LIMIT = 15;
     const LOCAL_BEST_KEY = "blockDropBestScore";
     const LOCAL_NAME_KEY = "blockDropPlayerName";
 
@@ -579,6 +581,28 @@
         [1, 1, 1],
         [0, 0, 0]
       ]
+    };
+
+    const SRS_KICKS_JLSTZ = {
+      "0>1": [[0, 0], [-1, 0], [-1, -1], [0, 2], [-1, 2]],
+      "1>0": [[0, 0], [1, 0], [1, 1], [0, -2], [1, -2]],
+      "1>2": [[0, 0], [1, 0], [1, 1], [0, -2], [1, -2]],
+      "2>1": [[0, 0], [-1, 0], [-1, -1], [0, 2], [-1, 2]],
+      "2>3": [[0, 0], [1, 0], [1, -1], [0, 2], [1, 2]],
+      "3>2": [[0, 0], [-1, 0], [-1, 1], [0, -2], [-1, -2]],
+      "3>0": [[0, 0], [-1, 0], [-1, 1], [0, -2], [-1, -2]],
+      "0>3": [[0, 0], [1, 0], [1, -1], [0, 2], [1, 2]]
+    };
+
+    const SRS_KICKS_I = {
+      "0>1": [[0, 0], [-2, 0], [1, 0], [-2, 1], [1, -2]],
+      "1>0": [[0, 0], [2, 0], [-1, 0], [2, -1], [-1, 2]],
+      "1>2": [[0, 0], [-1, 0], [2, 0], [-1, -2], [2, 1]],
+      "2>1": [[0, 0], [1, 0], [-2, 0], [1, 2], [-2, -1]],
+      "2>3": [[0, 0], [2, 0], [-1, 0], [2, -1], [-1, 2]],
+      "3>2": [[0, 0], [-2, 0], [1, 0], [-2, 1], [1, -2]],
+      "3>0": [[0, 0], [1, 0], [-2, 0], [1, 2], [-2, -1]],
+      "0>3": [[0, 0], [-1, 0], [2, 0], [-1, -2], [2, 1]]
     };
 
     const boardCanvas = document.getElementById("boardCanvas");
@@ -631,6 +655,8 @@
     let gameStarted = false;
     let gameOver = false;
     let dropAccumulator = 0;
+    let lockDelayTimer = 0;
+    let lockActionCount = 0;
     let lastTime = 0;
     let flashTimer = 0;
     let toastTimer = 0;
@@ -730,8 +756,8 @@
       unlockAudio();
       if (!gameStarted || gameOver || !current) return;
 
-      if (action === "left") movePiece(-1, 0, true);
-      else if (action === "right") movePiece(1, 0, true);
+      if (action === "left") movePiece(-1, 0, true, true);
+      else if (action === "right") movePiece(1, 0, true, true);
       else if (action === "softDrop") softDrop();
       else if (action === "hardDrop") hardDrop();
       else if (action === "rotateCW") rotatePiece(1);
@@ -756,6 +782,8 @@
       gameStarted = true;
       gameOver = false;
       dropAccumulator = 0;
+      lockDelayTimer = 0;
+      lockActionCount = 0;
       lastTime = performance.now();
       lineFlashes = [];
       particles = [];
@@ -779,11 +807,28 @@
       let needsDraw = false;
 
       if (gameStarted && !gameOver && current) {
-        dropAccumulator += delta;
-        if (dropAccumulator >= getDropInterval()) {
+        if (isPieceGrounded(current)) {
           dropAccumulator = 0;
-          if (!movePiece(0, 1, false)) lockPiece();
-          needsDraw = true;
+
+          if (lockActionCount >= LOCK_ACTION_LIMIT) {
+            lockPiece();
+            needsDraw = true;
+          } else {
+            lockDelayTimer += delta;
+            if (lockDelayTimer >= LOCK_DELAY_MS) {
+              lockPiece();
+              needsDraw = true;
+            }
+          }
+        } else {
+          lockDelayTimer = 0;
+          dropAccumulator += delta;
+
+          if (dropAccumulator >= getDropInterval()) {
+            dropAccumulator = 0;
+            movePiece(0, 1, false, false);
+            needsDraw = true;
+          }
         }
       }
 
@@ -831,6 +876,7 @@
       return {
         type,
         matrix,
+        rotation: 0,
         x: Math.floor((COLS - matrix[0].length) / 2),
         y: 0,
         rotatedLast: false
@@ -846,64 +892,99 @@
       if (!forcedType) fillNextQueue();
       current = createPiece(type);
       canHold = true;
+      lockDelayTimer = 0;
+      lockActionCount = 0;
       current.rotatedLast = false;
       if (collides(current)) endGame();
     }
 
-    function movePiece(dx, dy, withSound) {
+    function movePiece(dx, dy, withSound, isManual = false) {
       if (!current) return false;
+      const wasGrounded = isPieceGrounded(current);
       const moved = { ...current, x: current.x + dx, y: current.y + dy };
       if (collides(moved)) return false;
       current.x += dx;
       current.y += dy;
       current.rotatedLast = false;
       if (withSound) playMoveSound();
+      if (isManual) handleLockAction(wasGrounded);
       return true;
     }
 
     function softDrop() {
-      if (movePiece(0, 1, false)) {
+      if (movePiece(0, 1, false, true)) {
         addScore(1, false);
         playMoveSound(0.04);
-      } else {
-        lockPiece();
       }
     }
 
     function hardDrop() {
       let distance = 0;
-      while (movePiece(0, 1, false)) distance++;
+      while (movePiece(0, 1, false, false)) distance++;
       if (distance > 0) addScore(distance * 2, false);
       playHardDropSound();
       makeImpactDust();
       lockPiece();
     }
 
+    function isPieceGrounded(piece = current) {
+      if (!piece) return false;
+      return collides({ ...piece, y: piece.y + 1 });
+    }
+
+    function handleLockAction(wasGrounded) {
+      if (!current || gameOver) return;
+      const groundedNow = isPieceGrounded(current);
+      if (!wasGrounded && !groundedNow) return;
+
+      lockActionCount++;
+      lockDelayTimer = 0;
+      dropAccumulator = 0;
+
+      if (lockActionCount >= LOCK_ACTION_LIMIT && groundedNow) {
+        lockPiece();
+      }
+    }
+
     function rotatePiece(direction) {
       if (!current) return;
+      const wasGrounded = isPieceGrounded(current);
+
       if (current.type === "O") {
         playRotateSound();
-        current.rotatedLast = true;
+        current.rotatedLast = false;
+        handleLockAction(wasGrounded);
         return;
       }
 
+      const oldRotation = current.rotation || 0;
+      const newRotation = (oldRotation + direction + 4) % 4;
       const rotatedMatrix = direction === 1 ? rotateMatrixCW(current.matrix) : rotateMatrixCCW(current.matrix);
-      const kicks = current.type === "I"
-        ? [[0, 0], [1, 0], [-1, 0], [2, 0], [-2, 0], [0, -1], [1, -1], [-1, -1], [0, 1]]
-        : [[0, 0], [1, 0], [-1, 0], [0, -1], [1, -1], [-1, -1], [2, 0], [-2, 0], [0, 1]];
+      const key = `${oldRotation}>${newRotation}`;
+      const kicks = current.type === "I" ? SRS_KICKS_I[key] : SRS_KICKS_JLSTZ[key];
 
       for (const [kx, ky] of kicks) {
-        const test = { ...current, matrix: rotatedMatrix, x: current.x + kx, y: current.y + ky };
+        const test = {
+          ...current,
+          matrix: rotatedMatrix,
+          rotation: newRotation,
+          x: current.x + kx,
+          y: current.y + ky
+        };
+
         if (!collides(test)) {
           current.matrix = rotatedMatrix;
+          current.rotation = newRotation;
           current.x += kx;
           current.y += ky;
           current.rotatedLast = true;
           dropAccumulator = 0;
           playRotateSound();
+          handleLockAction(wasGrounded);
           return;
         }
       }
+
       playErrorSound();
     }
 
