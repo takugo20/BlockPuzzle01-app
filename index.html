@@ -529,7 +529,9 @@
     const CELL = 32;
 
     const SCORE_TABLE = [0, 100, 300, 500, 800];
-    const T_SPIN_SCORE = 800;
+    const T_SPIN_FULL_SCORES = [0, 800, 1200, 1600, 0];
+    const T_SPIN_MINI_SCORES = [0, 200, 400, 0, 0];
+    const BACK_TO_BACK_MULTIPLIER = 1.5;
     const LOCK_DELAY_MS = 500;
     const LOCK_ACTION_LIMIT = 15;
     const LOCAL_BEST_KEY = "blockDropBestScore";
@@ -652,6 +654,7 @@
     let lines = 0;
     let level = 1;
     let bestScore = Number(localStorage.getItem(LOCAL_BEST_KEY) || 0);
+    let backToBack = false;
     let gameStarted = false;
     let gameOver = false;
     let dropAccumulator = 0;
@@ -779,6 +782,7 @@
       score = 0;
       lines = 0;
       level = 1;
+      backToBack = false;
       gameStarted = true;
       gameOver = false;
       dropAccumulator = 0;
@@ -879,7 +883,8 @@
         rotation: 0,
         x: Math.floor((COLS - matrix[0].length) / 2),
         y: 0,
-        rotatedLast: false
+        rotatedLast: false,
+        lastKickIndex: -1
       };
     }
 
@@ -906,6 +911,7 @@
       current.x += dx;
       current.y += dy;
       current.rotatedLast = false;
+      current.lastKickIndex = -1;
       if (withSound) playMoveSound();
       if (isManual) handleLockAction(wasGrounded);
       return true;
@@ -953,6 +959,7 @@
       if (current.type === "O") {
         playRotateSound();
         current.rotatedLast = false;
+        current.lastKickIndex = -1;
         handleLockAction(wasGrounded);
         return;
       }
@@ -963,7 +970,8 @@
       const key = `${oldRotation}>${newRotation}`;
       const kicks = current.type === "I" ? SRS_KICKS_I[key] : SRS_KICKS_JLSTZ[key];
 
-      for (const [kx, ky] of kicks) {
+      for (let kickIndex = 0; kickIndex < kicks.length; kickIndex++) {
+        const [kx, ky] = kicks[kickIndex];
         const test = {
           ...current,
           matrix: rotatedMatrix,
@@ -978,6 +986,7 @@
           current.x += kx;
           current.y += ky;
           current.rotatedLast = true;
+          current.lastKickIndex = kickIndex;
           dropAccumulator = 0;
           playRotateSound();
           handleLockAction(wasGrounded);
@@ -1041,7 +1050,7 @@
 
     function lockPiece() {
       if (!current || gameOver) return;
-      const wasTSpin = isTSpin(current);
+      const tSpinInfo = analyzeTSpin(current);
 
       forEachCell(current, (x, y) => {
         if (y >= 0 && y < ROWS && x >= 0 && x < COLS) board[y][x] = current.type;
@@ -1057,17 +1066,17 @@
         lines += cleared;
         level = Math.floor(lines / 10) + 1;
 
-        const points = wasTSpin ? T_SPIN_SCORE * level : SCORE_TABLE[cleared] * level;
-        addScore(points, true);
+        const scoreInfo = getClearScoreInfo(cleared, tSpinInfo);
+        addScore(scoreInfo.points, true, scoreInfo.flashLabel);
+        updateBackToBack(cleared, scoreInfo.difficult);
 
-        if (wasTSpin) {
-          showMessage(`<strong>T-SPIN</strong> +${formatNumber(points)}`);
+        showMessage(`<strong>${scoreInfo.messageLabel}</strong> +${formatNumber(scoreInfo.points)}`);
+
+        if (scoreInfo.isTSpin) {
           playTSpinSound();
         } else if (cleared === 4) {
-          showMessage(`<strong>4 LINE</strong> +${formatNumber(points)}`);
           playClearSound(true);
         } else {
-          showMessage(`<strong>${cleared} LINE</strong> +${formatNumber(points)}`);
           playClearSound(false);
         }
 
@@ -1105,8 +1114,10 @@
       while (board.length < ROWS) board.unshift(Array(COLS).fill(null));
     }
 
-    function isTSpin(piece) {
-      if (!piece || piece.type !== "T" || !piece.rotatedLast) return false;
+    function analyzeTSpin(piece) {
+      const emptyResult = { isTSpin: false, isMini: false, occupiedCorners: 0, frontCorners: 0 };
+      if (!piece || piece.type !== "T" || !piece.rotatedLast) return emptyResult;
+
       const centerX = piece.x + 1;
       const centerY = piece.y + 1;
       const corners = [
@@ -1116,28 +1127,98 @@
         [centerX + 1, centerY + 1]
       ];
 
-      let occupied = 0;
-      for (const [x, y] of corners) {
-        if (x < 0 || x >= COLS || y >= ROWS) occupied++;
-        else if (y >= 0 && board[y][x]) occupied++;
-      }
-      return occupied >= 3;
+      const occupied = corners.map(([x, y]) => isTSpinCornerOccupied(x, y));
+      const occupiedCorners = occupied.filter(Boolean).length;
+      if (occupiedCorners < 3) return emptyResult;
+
+      const frontIndexesByRotation = [
+        [0, 1],
+        [1, 3],
+        [2, 3],
+        [0, 2]
+      ];
+      const frontIndexes = frontIndexesByRotation[piece.rotation || 0];
+      const frontCorners = frontIndexes.reduce((count, index) => count + (occupied[index] ? 1 : 0), 0);
+      const usedFifthKick = piece.lastKickIndex === 4;
+      const isMini = frontCorners < 2 && !usedFifthKick;
+
+      return { isTSpin: true, isMini, occupiedCorners, frontCorners };
     }
 
-    function addScore(amount, flash) {
+    function isTSpinCornerOccupied(x, y) {
+      if (x < 0 || x >= COLS || y >= ROWS) return true;
+      if (y < 0) return false;
+      return Boolean(board[y][x]);
+    }
+
+    function getClearScoreInfo(cleared, tSpinInfo) {
+      let baseScore = SCORE_TABLE[cleared] || 0;
+      let messageLabel = `${cleared} LINE`;
+      let difficult = false;
+      let isTSpin = false;
+
+      if (tSpinInfo.isTSpin) {
+        isTSpin = true;
+        difficult = true;
+
+        if (tSpinInfo.isMini) {
+          baseScore = T_SPIN_MINI_SCORES[cleared] || 0;
+          messageLabel = "T-SPIN MINI";
+        } else if (cleared === 1) {
+          baseScore = T_SPIN_FULL_SCORES[1];
+          messageLabel = "T-SPIN SINGLE";
+        } else if (cleared === 2) {
+          baseScore = T_SPIN_FULL_SCORES[2];
+          messageLabel = "T-SPIN DOUBLE";
+        } else if (cleared === 3) {
+          baseScore = T_SPIN_FULL_SCORES[3];
+          messageLabel = "T-SPIN TRIPLE";
+        } else {
+          baseScore = T_SPIN_FULL_SCORES[cleared] || T_SPIN_FULL_SCORES[3];
+          messageLabel = "T-SPIN";
+        }
+      } else if (cleared === 4) {
+        difficult = true;
+        messageLabel = "4 LINE";
+      }
+
+      const hasBackToBackBonus = difficult && backToBack;
+      let points = baseScore * level;
+      if (hasBackToBackBonus) points = Math.floor(points * BACK_TO_BACK_MULTIPLIER);
+
+      const flashLabel = hasBackToBackBonus ? `B2B ${messageLabel}` : messageLabel;
+      const fullMessageLabel = hasBackToBackBonus ? `B2B ${messageLabel}` : messageLabel;
+
+      return {
+        points,
+        messageLabel: fullMessageLabel,
+        flashLabel,
+        difficult,
+        isTSpin,
+        hasBackToBackBonus
+      };
+    }
+
+    function updateBackToBack(cleared, difficult) {
+      if (cleared <= 0) return;
+      backToBack = Boolean(difficult);
+    }
+
+    function addScore(amount, flash, label = "") {
       score += amount;
       if (score > bestScore) {
         bestScore = score;
         localStorage.setItem(LOCAL_BEST_KEY, String(bestScore));
       }
       updateUi();
-      if (flash && amount > 0) showScoreFlash(amount);
+      if (flash && amount > 0) showScoreFlash(amount, label);
     }
 
-    function showScoreFlash(amount) {
-      scoreFlash.textContent = `+${formatNumber(amount)}`;
+    function showScoreFlash(amount, label = "") {
+      const safeLabel = escapeHtml(label);
+      scoreFlash.innerHTML = safeLabel ? `${safeLabel}<br>+${formatNumber(amount)}` : `+${formatNumber(amount)}`;
       scoreFlash.classList.add("show");
-      flashTimer = performance.now() + 900;
+      flashTimer = performance.now() + 1000;
     }
 
     function showMessage(html) {
