@@ -218,12 +218,12 @@
     }
 
     .btn-left {
-      left: calc(50% - var(--bottom-row-width) / 2);
+      left: max(7px, env(safe-area-inset-left));
     }
 
     .btn-right {
-      left: calc(50% - var(--bottom-row-width) / 2 + var(--btn-size) + var(--control-gap) + var(--small-btn) + var(--control-gap) + var(--small-btn) + var(--control-gap));
-      right: auto;
+      left: auto;
+      right: max(7px, env(safe-area-inset-right));
     }
 
     .btn-ccw,
@@ -237,14 +237,14 @@
     }
 
     .btn-ccw {
-      left: calc(50% - var(--bottom-row-width) / 2 + var(--btn-size) + var(--control-gap));
+      left: calc(max(7px, env(safe-area-inset-left)) + var(--btn-size) + var(--control-gap));
       top: auto;
       bottom: var(--control-bottom);
     }
 
     .btn-cw {
-      left: calc(50% - var(--bottom-row-width) / 2 + var(--btn-size) + var(--control-gap) + var(--small-btn) + var(--control-gap));
-      right: auto;
+      left: auto;
+      right: calc(max(7px, env(safe-area-inset-right)) + var(--btn-size) + var(--control-gap));
       top: auto;
       bottom: var(--control-bottom);
     }
